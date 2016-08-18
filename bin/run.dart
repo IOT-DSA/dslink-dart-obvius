@@ -41,7 +41,7 @@ Future bind(int port) async {
     print("Method: ${request.method}");
     print("Body: ${request.method}");
     print("###############");
-    request.response.write("success");
+    request.response.write("SUCCESS");
     request.response.close();
   });
 }
