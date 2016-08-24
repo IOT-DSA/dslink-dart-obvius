@@ -1,4 +1,5 @@
 import "dart:async";
+import "dart:convert" show UTF8;
 import "dart:io";
 
 import "package:dslink/dslink.dart";
@@ -35,11 +36,16 @@ main(List<String> args) async {
 
 Future bind(int port) async {
   httpServer = await new HttpServer.listenOn(await ServerSocket.bind(InternetAddress.ANY_IP_V4, port));
-  httpServer.listen((request) {
+  httpServer.listen((request) async {
+    var body = await request.transform(UTF8.decoder).toList();
     print("### REQUEST ###");
     print("URI: ${request.uri}");
     print("Method: ${request.method}");
-    print("Body: ${request.method}");
+    print("Headers:");
+    request.headers.forEach((name, vals) {
+      print("\t$name: $vals");
+    });
+    print("Body: $body");
     print("###############");
     request.response.write("SUCCESS");
     request.response.close();
