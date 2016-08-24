@@ -37,7 +37,13 @@ main(List<String> args) async {
 Future bind(int port) async {
   httpServer = await new HttpServer.listenOn(await ServerSocket.bind(InternetAddress.ANY_IP_V4, port));
   httpServer.listen((request) async {
-    var body = await request.transform(UTF8.decoder).toList();
+    var body = await request.toList();
+    List<String> bodyStr;
+    try {
+      bodyStr = body.map((data) => UTF8.decode(data)).toList();
+    } catch (e) {
+      bodyStr = new List<String>()..add("Body not UTF8");
+    }
     print("### REQUEST ###");
     print("URI: ${request.uri}");
     print("Method: ${request.method}");
@@ -45,7 +51,7 @@ Future bind(int port) async {
     request.headers.forEach((name, vals) {
       print("\t$name: $vals");
     });
-    print("Body: $body");
+    print("Body: $bodyStr");
     print("###############");
     request.response.write("SUCCESS");
     request.response.close();
